@@ -2,3 +2,10 @@ extends layout
 
 block content
   h1= title
+  ul#list
+    each word in list
+      li.word
+        a.word-link(href="#")=word
+
+script(type="text/javascript").
+  var list=!{JSON.stringify(list).replace(/<\//g, "<\\/")};

@@ -7,7 +7,7 @@ var data = require('./../data/data.json');
 router.get('/', function(req, res, next) {
   // TODO: here get the list of words from dico
   console.log(data.list);
-  res.render('index', { title: 'Lecture Dico', list:data.list });
+  res.render('index', { body_class:"stage", title: 'Lecture Dico', list:data.list });
 });
 
 module.exports = router;
