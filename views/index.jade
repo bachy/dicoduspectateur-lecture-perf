@@ -3,5 +3,10 @@ extends layout
 block content
   #root
     canvas#stage
-    #images
-      img#image(src="/images/image.png")
+  //- ul#list
+  //-   each word in list
+  //-     li.word=word
+  #images
+    img#image(src="/images/image.png")
+  script(type="text/javascript").
+    var list=!{JSON.stringify(list).replace(/<\//g, "<\\/")};
