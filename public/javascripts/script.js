@@ -26,30 +26,23 @@ function StageApp(){
   var _texts = [];
   for (var i = 0; i < list.length; i++) {
     _texts.push(new Word(i, list[i]));
-    // _texts[i] = new fabric.Text(list[i], {
-    //   left: Math.random()*_stage.width,
-    //   top: Math.random()*_stage.height,
-    //   fontFamily: 'amiri',
-    //   fill: '#0000d2',
-    //   fontSize:15 + Math.random()*15
-    // });
-    // _stage.add(_texts[i]);
   }
-  // _stage.renderTop();
 
   // create an image element and add it to _stage
-  var imgElement = document.getElementById('image');
-  var imgInstance = new fabric.Image(imgElement, {
-    left: 200,
-    top: 300,
-    // angle: 30,
-    opacity: 0.85,
-    scale:0.4
-    // width:330,
-    // height:50
+  var img_title = document.getElementById('img-title');
+  var imgTitleInstance = new fabric.Image(img_title, {
+    left: _stage.width/2,
+    top: _stage.height/2,
+    opacity: 0.10,
+    scaleX:1,
+    scaleY:1,
+    width:800,
+    height:800,
+    originX: 'center',
+    originY: 'center'
   });
-  _stage.add(imgInstance);
-  imgInstance.sendToBack();
+  _stage.add(imgTitleInstance);
+  imgTitleInstance.sendToBack();
 
   /*
   requestAnimationFrame
@@ -98,14 +91,16 @@ function StageApp(){
           fontFamily: 'amiri',
           fill: '#0000d2',
           fontSize:this.fontSize,
-          opacity:this.opacity
+          opacity:this.opacity,
+          originX: 'center',
+          originY: 'center'
         });
         _stage.add(this.view);
       }
 
       Word.prototype.move = function(){
-        if(this.opacity < 1){
-          this.opacity *=1.01;
+        if(this.opacity < 0.8){
+          this.opacity *=1.005;
           this.view.set('opacity', this.opacity);
         }
 
@@ -135,18 +130,80 @@ function StageApp(){
     this.init();
   };
 
+
+  /*
+  SOCKET IO
+  */
+
+  // var serverBaseUrl = document.domain;
+  // console.log(serverBaseUrl);
+  var socket = io.connect();
+  var sessionId = '';
+
+  /* sockets */
+  socket.on('connect', onSocketConnect);
+  socket.on('error', onSocketError);
+  socket.on('focusWord', onFocusWord);
+
+  function onSocketConnect() {
+    // sessionId = socket.socket.sessionid;
+    console.log('socket io Connected');
+    // socket.emit('newUser', {id: sessionId, name: $('#name').val()});
+  };
+
+  function onSocketError(reason) {
+    console.log('Unable to connect to server', reason);
+  };
+
+  function onFocusWord(data){
+    console.log('focus word', data);
+  }
+
 };
 
-function RemotteApp(){
+function RemoteApp(){
   console.log("remote");
-  // for (var i = 0; i < list.length; i++) {
-  //
-  //
-  // }
+
+  // var serverBaseUrl = document.domain;
+  // console.log(serverBaseUrl);
+  var socket = io.connect();
+  var sessionId = '';
+
+  /**
+  * Events
+  */
+  /* sockets */
+  socket.on('connect', onSocketConnect);
+  // socket.on('incomingLine', onIncomingLine);
+  socket.on('error', onSocketError);
+
+  /* dom */
+  $('li.word a').on('click', onClickWord);
+
+  function onClickWord(event){
+    event.preventDefault();
+    console.log(this);
+
+    socket.emit('focusWord', {test:"hello"});
+
+    return false;
+  };
+
+  /* sockets */
+  function onSocketConnect() {
+    // sessionId = socket.socket.sessionid;
+    console.log('socket io Connected');
+    // socket.emit('newUser', {id: sessionId, name: $('#name').val()});
+  };
+
+  function onSocketError(reason) {
+    console.log('Unable to connect to server', reason);
+  };
+
 };
 
 if(document.body.className.match('stage')){
   StageApp();
 }else if(document.body.className.match('remote')){
-  RemotteApp();
+  RemoteApp();
 }

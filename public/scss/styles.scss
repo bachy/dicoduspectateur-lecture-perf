@@ -22,8 +22,48 @@ canvas#stage{
 //   // display:none;
 // }
 
-#images{
-  margin:0; padding:0;
-  overflow: hidden;
-  height:0;
+/*
+  Stage
+*/
+body.stage{
+  #images{
+    margin:0; padding:0;
+    overflow: hidden;
+    height:0;
+  }
+}
+
+
+/*
+Remote
+*/
+body.remote{
+  #root{
+    padding:1em;
+  }
+  h1{
+    color:#0000d2;
+  }
+  ul#words-list{
+    padding:0; margin:0;
+    li.word{
+      display:inline-block;
+      border: 3px solid #00FF9A;
+      margin:0 1em 1em 0;
+      background-color: #fff;
+      &:hover{
+        box-shadow:  0px 0px 30px #FF2E74;
+      }
+      &.active{
+        box-shadow:  0px 0px 30px #FF2E74;
+      }
+      a{
+        display:block;
+        height:100%;
+        color:#0000d2;
+        text-decoration: none;
+        padding:1em;
+      }
+    }
+  }
 }

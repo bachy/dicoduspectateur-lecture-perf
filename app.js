@@ -1,4 +1,10 @@
 var express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(8888);
+
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -8,7 +14,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var remote = require('./routes/remote');
 
-var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -56,5 +62,26 @@ app.use(function(err, req, res, next) {
   });
 });
 
+
+/**
+* Socket.IO events
+*/
+io.on("connection", function(socket){
+  console.log('socket io connected');
+  /*
+    When a client disconnects from the server, the event "disconnect" is automatically
+    captured by the server. It will then emit an event called "userDisconnected" to
+    all participants with the id of the client that disconnected
+  */
+  socket.on("disconnect", function() {
+    participants = _.without(participants,_.findWhere(participants, {id: socket.id}));
+    io.sockets.emit("userDisconnected", {id: socket.id, sender:"system"});
+  });
+
+  socket.on('focusWord', function(data){
+    io.sockets.emit('focusWord', data);
+  });
+
+});
 
 module.exports = app;

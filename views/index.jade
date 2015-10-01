@@ -1,9 +1,9 @@
 extends layout
 
 block content
-  #root
+  #root 
     canvas#stage
   #images
-    img#image(src="/images/image.png")
+    img#img-title(src="/images/title.png")
   script(type="text/javascript").
     var list=!{JSON.stringify(list).replace(/<\//g, "<\\/")};
