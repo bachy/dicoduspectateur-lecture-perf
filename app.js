@@ -1,9 +1,40 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
 
-server.listen(8888);
+var os = require('os');
+var ifaces = os.networkInterfaces();
+
+var port = 8888;
+var server = app.listen(port, function(){
+    console.log("Server up and running");
+    console.log("Go to http://localhost:" + port + " or to http://localhost:" + port+"/remote");
+
+
+    Object.keys(ifaces).forEach(function (ifname) {
+      var alias = 0;
+
+      ifaces[ifname].forEach(function (iface) {
+        if ('IPv4' !== iface.family || iface.internal !== false) {
+          // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+          return;
+        }
+
+        // if (alias >= 1) {
+        //   // this single interface has multiple ipv4 addresses
+        //   console.log(ifname + ':' + alias, iface.address);
+        // } else {
+          // this interface has only one ipv4 adress
+          // console.log(ifname, iface.address);
+        // }
+
+        console.log("OR from an other device on the local network \nGo to http://"+iface.address+":" + port + " or to http://"+iface.address+":" + port+"/remote");
+
+      });
+    });
+
+});
+
+var io = require('socket.io').listen(server);
 
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -13,8 +44,6 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var remote = require('./routes/remote');
-
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
