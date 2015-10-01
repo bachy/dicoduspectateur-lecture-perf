@@ -73,10 +73,8 @@ io.on("connection", function(socket){
     captured by the server. It will then emit an event called "userDisconnected" to
     all participants with the id of the client that disconnected
   */
-  socket.on("disconnect", function() {
-    participants = _.without(participants,_.findWhere(participants, {id: socket.id}));
-    io.sockets.emit("userDisconnected", {id: socket.id, sender:"system"});
-  });
+  // socket.on("disconnect", function() {
+  // });
 
   socket.on('focusWord', function(data){
     io.sockets.emit('focusWord', data);

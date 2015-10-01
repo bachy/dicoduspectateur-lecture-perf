@@ -67,6 +67,7 @@ function StageApp(){
 
   startAnimation();
 
+  var focused_word_id = false;
   /*
  __          __           _
  \ \        / /          | |
@@ -106,6 +107,8 @@ function StageApp(){
 
         this.pos.left += this.dir * this.speed;
         this.view.set('left', this.pos.left);
+        this.view.set('top', this.pos.top);
+        this.view.set('fontSize', this.fontSize);
 
         if (this.pos.left > _stage.width + 300
           || this.pos.left < -300){
@@ -122,7 +125,20 @@ function StageApp(){
         };
         this.dir = Math.random() > 0.5 ? 1 : -1;
         this.speed = 0.1+Math.random()/2;
-      }
+      };
+
+      Word.prototype.focus = function(){
+        focused_word_id = this.index;
+        this.fontSize = 150 + Math.random()*50;
+        this.opacity = 0.5;
+        this.pos = {
+          left: _stage.width/2,
+          top: _stage.height/2,
+        };
+        this.dir = Math.random() > 0.5 ? 1 : -1;
+        this.speed = 0.1+Math.random()/2;
+      };
+
 
       Word.initialized = true;
     };
@@ -132,7 +148,14 @@ function StageApp(){
 
 
   /*
-  SOCKET IO
+   _____            _        _     _____ ____
+  / ____|          | |      | |   |_   _/ __ \
+ | (___   ___   ___| | _____| |_    | || |  | |
+  \___ \ / _ \ / __| |/ / _ \ __|   | || |  | |
+  ____) | (_) | (__|   <  __/ |_   _| || |__| |
+ |_____/ \___/ \___|_|\_\___|\__| |_____\____/
+
+
   */
 
   // var serverBaseUrl = document.domain;
@@ -157,14 +180,37 @@ function StageApp(){
 
   function onFocusWord(data){
     console.log('focus word', data);
+    if(focused_word_id !== false){
+      _texts[focused_word_id].resetPosition();
+    }
+
+    for (var i = 0; i < _texts.length; i++) {
+      if(_texts[i].text == data.word){
+        _texts[i].focus();
+        break;
+      }
+    }
+
   }
 
 };
 
+
+/*
+  _____                      _
+ |  __ \                    | |         /\
+ | |__) |___ _ __ ___   ___ | |_ ___   /  \   _ __  _ __
+ |  _  // _ \ '_ ` _ \ / _ \| __/ _ \ / /\ \ | '_ \| '_ \
+ | | \ \  __/ | | | | | (_) | ||  __// ____ \| |_) | |_) |
+ |_|  \_\___|_| |_| |_|\___/ \__\___/_/    \_\ .__/| .__/
+                                             | |   | |
+                                             |_|   |_|
+*/
+
 function RemoteApp(){
-  console.log("remote");
 
   // var serverBaseUrl = document.domain;
+  console.log("remote");
   // console.log(serverBaseUrl);
   var socket = io.connect();
   var sessionId = '';
@@ -184,7 +230,7 @@ function RemoteApp(){
     event.preventDefault();
     console.log(this);
 
-    socket.emit('focusWord', {test:"hello"});
+    socket.emit('focusWord', {word:$(this).text()});
 
     return false;
   };
