@@ -44,6 +44,9 @@ function StageApp(){
   _stage.add(imgTitleInstance);
   imgTitleInstance.sendToBack();
 
+  var current_visage = false;
+  var next_visage_time = Date.now() + Math.random()*20*1000;
+
   /*
   requestAnimationFrame
   */
@@ -52,7 +55,7 @@ function StageApp(){
   };
 
   function Animate(){
-    console.log("Animate");
+    // console.log("Animate");
 
     window.requestAnimationFrame(Animate);
 
@@ -62,6 +65,15 @@ function StageApp(){
       _texts[i].move();
       // _texts[i].set('top', _texts[i].top+2);
     }
+
+    if(!current_visage){
+      if(Date.now() > next_visage_time){
+        current_visage = new Visage();
+      }
+    }else{
+      current_visage.move();
+    }
+
     _stage.renderAll();
   };
 
@@ -145,6 +157,80 @@ function StageApp(){
 
     this.init();
   };
+
+
+  function Visage() {
+    // this.index = i;
+    this.id = "visage-"+parseInt(Math.random()*30);
+    this.bornTime = Date.now();
+    this.lifeTime = 10+Math.random()*20; // in sec
+    console.log('New Visage '+this.id+' for '+parseInt(this.lifeTime)+'sec');
+    this.scale = 0.5+Math.random()/2;
+    this.opacity = 0.01;
+    this.pos = {
+      left: _stage.width/2 + Math.random()*_stage.width/2 - _stage.width/4,
+      top: _stage.height/2 + Math.random()*_stage.height/2 - _stage.height/3,
+    };
+    this.dir = Math.random() > 0.5 ? 1 : -1;
+    this.speed = 0.1+Math.random()/2;
+
+
+    // prototypes
+    if (typeof Visage.initialized == "undefined") {
+
+      Visage.prototype.init = function(){
+        // console.log('Visage init');
+
+        // create an image element and add it to _stage
+        this.img = document.getElementById(this.id);
+        this.view = new fabric.Image(this.img, {
+          left: this.pos.left,
+          top: this.pos.top,
+          opacity: 0.01,
+          scaleX:this.scale,
+          scaleY:this.scale,
+          width:600,
+          height:600,
+          originX: 'center',
+          originY: 'center'
+        });
+        _stage.add(this.view);
+        this.view.bringForward(true);//sendToBack();
+
+      }
+
+      Visage.prototype.move = function(){
+        this.pos.left += this.dir * this.speed;
+        this.view.set('left', this.pos.left);
+        this.view.set('top', this.pos.top);
+
+        if(Date.now() < this.bornTime+this.lifeTime*1000){
+          if(this.opacity < 0.7)
+            this.opacity *=1.015;
+        }else{
+          if(this.opacity > 0.005){
+            this.opacity *=0.995;
+          }else{
+            this.kill();
+          }
+        }
+        this.view.set('opacity', this.opacity);
+      };
+
+      Visage.prototype.kill = function(){
+        this.view.remove();
+        var nvt = 5+Math.random()*30;
+        next_visage_time = Date.now() + nvt*1000;
+        console.log("visage killed, next visage in "+parseInt(nvt)+"sec");
+        current_visage = false;
+      };
+
+      Visage.initialized = true;
+    };
+
+    this.init();
+  };
+
 
 
   /*

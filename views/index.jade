@@ -5,5 +5,8 @@ block content
     canvas#stage
   #images
     img#img-title(src="/images/title.png")
+    - for (var i = 1; i < 30; ++i) {
+        img(id="visage-"+i src="/images/visage-" + i + ".png")
+    - }
   script(type="text/javascript").
     var list=!{JSON.stringify(list).replace(/<\//g, "<\\/")};
