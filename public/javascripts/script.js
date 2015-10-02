@@ -113,7 +113,9 @@ function StageApp(){
 
       Word.prototype.move = function(){
         if(this.opacity < 0.8){
-          this.opacity *=1.005;
+          this.opacity *= focused_word_id === this.index
+            ? 1.1
+            : 1.005;
           this.view.set('opacity', this.opacity);
         }
 
@@ -129,7 +131,9 @@ function StageApp(){
       };
 
       Word.prototype.resetPosition = function(){
-        this.fontSize = 20 + Math.random()*40;
+        this.fontSize = Math.random() > 0.3
+          ? 15 + Math.random()*20
+          : 25 + Math.random()*35;
         this.opacity = 0.01;
         this.pos = {
           left: Math.random()*_stage.width,
@@ -142,10 +146,10 @@ function StageApp(){
       Word.prototype.focus = function(){
         focused_word_id = this.index;
         this.fontSize = 150 + Math.random()*50;
-        this.opacity = 0.5;
+        this.opacity = 0.01;
         this.pos = {
-          left: _stage.width/2,
-          top: _stage.height/2,
+          left: _stage.width/2 +Math.random()*200-100,
+          top: _stage.height/2 +Math.random()*200-100,
         };
         this.dir = Math.random() > 0.5 ? 1 : -1;
         this.speed = 0.1+Math.random()/2;
@@ -195,7 +199,7 @@ function StageApp(){
           originY: 'center'
         });
         _stage.add(this.view);
-        this.view.bringForward(true);//sendToBack();
+        this.view.sendToBack();//bringForward(true);
 
       }
 
